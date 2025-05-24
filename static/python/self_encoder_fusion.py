@@ -8,26 +8,18 @@ import os
 class DenseFuse(nn.Module):
     def __init__(self):
         super(DenseFuse, self).__init__()
-        # 编码器
-        self.conv1 = nn.Conv2d(1, 64, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
-        self.conv3 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
-        
-        # 解码器
-        self.conv4 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
-        self.conv5 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
-        self.conv6 = nn.Conv2d(64, 1, kernel_size=3, padding=1)
+        # 简化模型结构，使用单个权重矩阵
+        self.weight = nn.Parameter(torch.randn(64, 1, 3, 3))
         
     def encoder(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv3(x))
+        # 使用weight参数进行卷积操作
+        x = F.conv2d(x, self.weight, padding=1)
+        x = F.relu(x)
         return x
         
     def decoder(self, x):
-        x = F.relu(self.conv4(x))
-        x = F.relu(self.conv5(x))
-        x = self.conv6(x)
+        # 使用weight参数的转置进行反卷积操作
+        x = F.conv_transpose2d(x, self.weight, padding=1)
         return x
 
 def self_encoder_fusion(visible_img, infrared_img):
@@ -49,7 +41,9 @@ def self_encoder_fusion(visible_img, infrared_img):
     model = DenseFuse()
     weights_path = os.path.join(os.path.dirname(__file__), '../model/model_weight.pkl')
     if os.path.exists(weights_path):
-        model.load_state_dict(torch.load(weights_path))
+        state_dict = torch.load(weights_path)
+        # 直接加载weight参数
+        model.weight.data = state_dict['weight']
     model.eval()
     
     # 特征提取和融合

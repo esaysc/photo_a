@@ -1,0 +1,36 @@
+<mxGraphModel dx="1554" dy="914" grid="1" gridSize="10">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    
+    <!-- 后端架构 -->
+    <mxCell id="backend" value="后端服务" style="rounded=1;whiteSpace=wrap;fontSize=17;editable=0;movable=0;" vertex="1" parent="1">
+      <mxGeometry x="400" y="120" width="180" height="80" />
+    </mxCell>
+    
+    <!-- 核心模块 -->
+    <mxCell id="modules" value="功能模块" style="shape=cylinder3;editable=0;movable=0;" vertex="1" parent="backend">
+      <mxGeometry x="20" y="120" width="140" height="180" />
+    </mxCell>
+
+    <!-- 前端架构 -->
+    <mxCell id="frontend" value="前端UI" style="swimlane;fontSize=17;editable=0;movable=0;" vertex="1" parent="1">
+      <mxGeometry x="400" y="300" width="180" height="400" />
+    </mxCell>
+
+    <!-- 静态资源 -->
+    <mxCell id="static" value="静态资源" style="shape=folder;editable=0;movable=0;" vertex="1" parent="frontend">
+      <mxGeometry x="40" y="60" width="100" height="120" />
+    </mxCell>
+
+    <!-- 图像融合服务 -->
+    <mxCell id="fusion" value="图像融合服务" style="shape=cloud;editable=0;movable=0;" vertex="1" parent="1">
+      <mxGeometry x="700" y="200" width="150" height="90" />
+    </mxCell>
+
+    <!-- 禁用连接线 -->
+    <mxCell id="conn1" edge="1" parent="1" visible="0">
+      <mxGeometry relative="1" />
+    </mxCell>
+  </root>
+</mxGraphModel>
