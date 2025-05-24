@@ -100,7 +100,10 @@ export default {
       },
       taskId: null,           // 添加任务ID
       progress: 0,            // 添加进度值
-      progressTimer: null     // 添加进度查询定时器
+      progressTimer: null,     // 添加进度查询定时器
+      startTime: null,     // 添加开始时间
+      elapsedTime: 0,      // 添加耗时（秒）
+      timerInterval: null  // 添加计时器
     }
   },
   computed: {
@@ -154,6 +157,16 @@ export default {
       this.loading = true;
       this.progress = 0;
       
+      // 重置并启动计时器
+      this.startTime = Date.now();
+      this.elapsedTime = 0;
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+      }
+      this.timerInterval = setInterval(() => {
+        this.elapsedTime = Math.floor((Date.now() - this.startTime) / 1000);
+      }, 1000);
+      
       const getFilePath = (url) => {
         const baseUrl = 'http://localhost:8080';
         return url.replace(baseUrl, '').replace('/profile/', '');
@@ -191,36 +204,42 @@ export default {
 
           this.progress = response.data.progress;
           
-          if (response.data.status === 'completed') {
+          if (response.data.status === 'completed' || response.data.status === 'failed') {
+            // 停止计时器
+            if (this.timerInterval) {
+              clearInterval(this.timerInterval);
+            }
+            
+            if (response.data.status === 'completed') {
+              this.resultImageUrl = import.meta.env.VITE_APP_BASE_API + response.data.result;
+              this.$modal.msgSuccess(`图像融合成功，耗时 ${this.elapsedTime} 秒`);
+            } else {
+              this.$modal.msgError("图像融合失败");
+            }
+            
             clearInterval(this.progressTimer);
-            this.resultImageUrl = import.meta.env.VITE_APP_BASE_API + response.data.result;
-            this.$modal.msgSuccess("图像融合成功");
-            this.loading = false;
-          } else if (response.data.status === 'failed') {
-            clearInterval(this.progressTimer);
-            this.$modal.msgError("图像融合失败");
             this.loading = false;
           }
         } catch (error) {
+          // 停止计时器
+          if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+          }
+          
           console.log("error => ", error)
           clearInterval(this.progressTimer);
           this.$modal.msgError("获取进度失败");
           this.loading = false;
         }
-      }, 1000);  // 每秒查询一次进度
+      }, 1000);
     },
     
-    // 在组件销毁时清除定时器
-    beforeDestroy() {
-      if (this.progressTimer) {
-        clearInterval(this.progressTimer);
-      }
-    },
-    
-    // 重置时也要清除定时器
     handleReset() {
       if (this.progressTimer) {
         clearInterval(this.progressTimer);
+      }
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
       }
       this.visibleImageUrl = '';
       this.infraredImageUrl = '';
@@ -228,6 +247,17 @@ export default {
       this.loading = false;
       this.progress = 0;
       this.taskId = null;
+      this.startTime = null;
+      this.elapsedTime = 0;
+    },
+    
+    beforeDestroy() {
+      if (this.progressTimer) {
+        clearInterval(this.progressTimer);
+      }
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+      }
     }
   }
 }

@@ -3,42 +3,31 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import cv2
+import os
 
-class Encoder(nn.Module):
+class DenseFuse(nn.Module):
     def __init__(self):
-        super(Encoder, self).__init__()
+        super(DenseFuse, self).__init__()
+        # 编码器
         self.conv1 = nn.Conv2d(1, 64, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(64, 32, kernel_size=3, padding=1)
-        self.conv3 = nn.Conv2d(32, 16, kernel_size=3, padding=1)
-
-    def forward(self, x):
+        self.conv2 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
+        self.conv3 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
+        
+        # 解码器
+        self.conv4 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
+        self.conv5 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
+        self.conv6 = nn.Conv2d(64, 1, kernel_size=3, padding=1)
+        
+    def encoder(self, x):
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
         return x
-
-class Decoder(nn.Module):
-    def __init__(self):
-        super(Decoder, self).__init__()
-        self.deconv1 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
-        self.deconv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
-        self.deconv3 = nn.Conv2d(64, 1, kernel_size=3, padding=1)
-
-    def forward(self, x):
-        x = F.relu(self.deconv1(x))
-        x = F.relu(self.deconv2(x))
-        x = self.deconv3(x)
-        return x
-
-class AutoEncoder(nn.Module):
-    def __init__(self):
-        super(AutoEncoder, self).__init__()
-        self.encoder = Encoder()
-        self.decoder = Decoder()
-
-    def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
+        
+    def decoder(self, x):
+        x = F.relu(self.conv4(x))
+        x = F.relu(self.conv5(x))
+        x = self.conv6(x)
         return x
 
 def self_encoder_fusion(visible_img, infrared_img):
@@ -56,22 +45,40 @@ def self_encoder_fusion(visible_img, infrared_img):
     visible_tensor = torch.from_numpy(visible_img).unsqueeze(0).unsqueeze(0)
     infrared_tensor = torch.from_numpy(infrared_img).unsqueeze(0).unsqueeze(0)
     
-    # 创建并初始化自编码器
-    model = AutoEncoder()
+    # 创建模型并加载预训练权重
+    model = DenseFuse()
+    weights_path = os.path.join(os.path.dirname(__file__), '../model/model_weight.pkl')
+    if os.path.exists(weights_path):
+        model.load_state_dict(torch.load(weights_path))
+    model.eval()
     
-    # 编码
+    # 特征提取和融合
     with torch.no_grad():
         visible_features = model.encoder(visible_tensor)
         infrared_features = model.encoder(infrared_tensor)
         
-        # 特征融合（加权平均）
-        fused_features = visible_features * 0.5 + infrared_features * 0.5
+        # 自适应权重融合
+        fusion_weight = torch.sigmoid(visible_features + infrared_features)
+        fused_features = fusion_weight * visible_features + (1 - fusion_weight) * infrared_features
         
-        # 解码
+        # 解码融合特征
         fused_image = model.decoder(fused_features)
+        fused_image = torch.tanh(fused_image) * 0.5 + 0.5
     
     # 后处理
     fused_image = fused_image.squeeze().numpy()
     fused_image = np.clip(fused_image * 255, 0, 255).astype(np.uint8)
     
     return fused_image
+
+# 示例使用
+if __name__ == "__main__":
+    visible_img = cv2.imread('visible_image.jpg')  # 替换为可见光图像的路径
+    infrared_img = cv2.imread('infrared_image.jpg')  # 替换为红外图像的路径
+    
+    fused_image = self_encoder_fusion(visible_img, infrared_img)
+    
+    # 显示或保存融合图像
+    cv2.imshow('Fused Image', fused_image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
