@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.cms.mapper.VideoCategoryMapper">
+    
+    <resultMap type="VideoCategory" id="VideoCategoryResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+    </resultMap>
+
+    <sql id="selectVideoCategoryVo">
+        select id, name from video_category
+    </sql>
+
+    <select id="selectVideoCategoryList" parameterType="VideoCategory" resultMap="VideoCategoryResult">
+        <include refid="selectVideoCategoryVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectVideoCategoryById" parameterType="Long" resultMap="VideoCategoryResult">
+        <include refid="selectVideoCategoryVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertVideoCategory" parameterType="VideoCategory" useGeneratedKeys="true" keyProperty="id">
+        insert into video_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVideoCategory" parameterType="VideoCategory">
+        update video_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteVideoCategoryById" parameterType="Long">
+        delete from video_category where id = #{id}
+    </delete>
+
+    <delete id="deleteVideoCategoryByIds" parameterType="String">
+        delete from video_category where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

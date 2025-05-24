@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.cms.mapper.VideoResourceMapper">
+    
+    <resultMap type="VideoResource" id="VideoResourceResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="storagePath"    column="storage_path"    />
+        <result property="duration"    column="duration"    />
+        <result property="description"    column="description"    />
+        <result property="audience"    column="audience"    />
+        <result property="coverPath"    column="cover_path"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="createdAt"    column="created_at"    />
+    </resultMap>
+
+    <sql id="selectVideoResourceVo">
+        select id, name, storage_path, duration, description, audience, cover_path, category_id, created_at from video_resource
+    </sql>
+
+    <select id="selectVideoResourceList" parameterType="VideoResource" resultMap="VideoResourceResult">
+        <include refid="selectVideoResourceVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="storagePath != null  and storagePath != ''"> and storage_path = #{storagePath}</if>
+            <if test="duration != null "> and duration = #{duration}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="audience != null  and audience != ''"> and audience = #{audience}</if>
+            <if test="coverPath != null  and coverPath != ''"> and cover_path = #{coverPath}</if>
+            <if test="categoryId != null "> and category_id = #{categoryId}</if>
+        </where>
+    </select>
+    
+    <select id="selectVideoResourceById" parameterType="Long" resultMap="VideoResourceResult">
+        <include refid="selectVideoResourceVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertVideoResource" parameterType="VideoResource" useGeneratedKeys="true" keyProperty="id">
+        insert into video_resource
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="storagePath != null and storagePath != ''">storage_path,</if>
+            <if test="duration != null">duration,</if>
+            <if test="description != null">description,</if>
+            <if test="audience != null">audience,</if>
+            <if test="coverPath != null">cover_path,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="createdAt != null">created_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="storagePath != null and storagePath != ''">#{storagePath},</if>
+            <if test="duration != null">#{duration},</if>
+            <if test="description != null">#{description},</if>
+            <if test="audience != null">#{audience},</if>
+            <if test="coverPath != null">#{coverPath},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVideoResource" parameterType="VideoResource">
+        update video_resource
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="storagePath != null and storagePath != ''">storage_path = #{storagePath},</if>
+            <if test="duration != null">duration = #{duration},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="audience != null">audience = #{audience},</if>
+            <if test="coverPath != null">cover_path = #{coverPath},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteVideoResourceById" parameterType="Long">
+        delete from video_resource where id = #{id}
+    </delete>
+
+    <delete id="deleteVideoResourceByIds" parameterType="String">
+        delete from video_resource where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

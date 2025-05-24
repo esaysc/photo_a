@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.cms.mapper.BookCategoryMapper">
+    
+    <resultMap type="BookCategory" id="BookCategoryResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+    </resultMap>
+
+    <sql id="selectBookCategoryVo">
+        select id, name from book_category
+    </sql>
+
+    <select id="selectBookCategoryList" parameterType="BookCategory" resultMap="BookCategoryResult">
+        <include refid="selectBookCategoryVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectBookCategoryById" parameterType="Long" resultMap="BookCategoryResult">
+        <include refid="selectBookCategoryVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBookCategory" parameterType="BookCategory" useGeneratedKeys="true" keyProperty="id">
+        insert into book_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBookCategory" parameterType="BookCategory">
+        update book_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBookCategoryById" parameterType="Long">
+        delete from book_category where id = #{id}
+    </delete>
+
+    <delete id="deleteBookCategoryByIds" parameterType="String">
+        delete from book_category where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
