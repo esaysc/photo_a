@@ -9,7 +9,7 @@ export function listVideo(query) {
   })
 }
 
-// 查询视频详细
+// 查询视频详情
 export function getVideo(id) {
   return request({
     url: '/cms/video/' + id,

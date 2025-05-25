@@ -87,10 +87,11 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { listBook } from '@/api/cms/book'
 const baseUrl = 'http://localhost:8080';
 const defaultCover = baseUrl+ '/profile/image/book-placeholder.jpg' // 你可以换成自己的默认封面
-
+const router = useRouter()
 // 查询参数
 const queryParams = reactive({
   pageNum: 1,
@@ -121,18 +122,29 @@ function onReset() {
   onSearch()
 }
 
-// 点击卡片：可以跳转详情页或直接下载
+// 点击卡片：跳转详情页
 function onCardClick(book) {
-  // 例如跳转到详情页：
-  // router.push({ name: 'BookDetail', params: { id: book.id } })
-  // 这里简单做下载：
-  window.open(book.storagePath, '_blank')
+  const storagePath = baseUrl + book.storagePath
+  router.push({
+    name: 'book-detail',
+    params: {
+      storagePath: encodeURIComponent(storagePath),
+      name: book.name,
+      fileType: book.fileType,
+      audience: book.audience,
+      coverPath: book.coverPath || defaultCover
+    }
+  })
 }
 
 // 下载按钮
 function onDownload(book) {
+  const storagePath = baseUrl + book.storagePath;
+  console.log("下载地址 => " + storagePath);
+  
   const a = document.createElement('a')
-  a.href = book.storagePath
+  a.href = storagePath
+  a.target = '_blank'  // 在新标签页打开
   a.download = ''
   document.body.appendChild(a)
   a.click()

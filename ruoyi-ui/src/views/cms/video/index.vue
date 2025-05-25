@@ -103,7 +103,8 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { listVideo } from '@/api/cms/video'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const baseUrl = 'http://localhost:8080';
 const defaultCover = baseUrl + '/profile/image/book-placeholder.jpg' 
 
@@ -150,14 +151,19 @@ function onSizeChange(size) {
 
 // 点击卡片，打开播放器
 function openPlayer(video) {
+  console.log("video => ", video);
+  router.push({ path: 'video-detail', params: { id: video.id } })
+  
   currentVideo.value = video
   playerOpen.value = true
 }
 
 // 下载
 function download(video) {
+  const storagePath = baseUrl + video.storagePath;
   const a = document.createElement('a')
-  a.href = video.storagePath
+  a.href = storagePath
+  a.target = '_blank'  // 在新标签页打开
   a.download = ''
   document.body.appendChild(a)
   a.click()
@@ -235,3 +241,10 @@ onMounted(fetchVideos)
   background: #000;
 }
 </style>
+
+const router = useRouter()
+
+// 点击卡片，跳转到详情页
+function openPlayer(video) {
+  router.push(`/cms/video/detail/${video.id}`)
+}
