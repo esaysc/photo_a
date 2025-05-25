@@ -231,7 +231,7 @@ export default {
           this.$modal.msgError("获取进度失败");
           this.loading = false;
         }
-      }, 1000);
+      }, 10000);
     },
     
     handleReset() {
@@ -323,7 +323,11 @@ export default {
 }
 
 .result-image {
-  max-width: 100%;
-  height: auto;
+  width: 600px;
+  height: 400px;
+  object-fit: contain;
+  border: 1px solid #EBEEF5;
+  border-radius: 4px;
+  padding: 10px;
 }
 </style>

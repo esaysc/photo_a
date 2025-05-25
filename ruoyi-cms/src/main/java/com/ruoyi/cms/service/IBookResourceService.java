@@ -7,7 +7,7 @@ import com.ruoyi.cms.domain.BookResource;
  * 图书Service接口
  * 
  * @author lhl
- * @date 2025-05-22
+ * @date 2025-05-25
  */
 public interface IBookResourceService 
 {

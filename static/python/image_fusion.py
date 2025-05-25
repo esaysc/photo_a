@@ -82,40 +82,68 @@ def pyramid_fusion(visible_img, infrared_img):
     ls_ = np.uint8(cv2.normalize(ls_, None, 0, 255, cv2.NORM_MINMAX))
     return ls_
 
-from ganresnet_fusion import ganresnet_fusion
-
 def main():
-    # 解析命令行参数
-    parser = argparse.ArgumentParser(description='Image Fusion')
-    parser.add_argument('--visible', required=True, help='Path to visible image')
+    parser = argparse.ArgumentParser(description='Image Fusion using Multiple Methods')
+    parser.add_argument('--visible', required=True, help='Path to visible light image')
     parser.add_argument('--infrared', required=True, help='Path to infrared image')
     parser.add_argument('--output', required=True, help='Path to output fused image')
-    parser.add_argument('--method', required=True, choices=['wavelet', 'pyramid', 'sparse', 'cnn', 'gan', 'self-encoder', 'ganresnet'],
-                        help='Fusion method to use')
+    parser.add_argument('--method', required=True, choices=['fast', 'wavelet', 'pyramid', 'sparse', 'cnn', 'self-encoder', 'gan', 'ganresnet'], help='Fusion method')
+    
     args = parser.parse_args()
     
     # 读取图像
     visible_img = cv2.imread(args.visible)
     infrared_img = cv2.imread(args.infrared)
     
-    # 根据选择的方法进行融合
-    if args.method == 'wavelet':
-        fused_img = wavelet_fusion(visible_img, infrared_img)
-    elif args.method == 'pyramid':
-        fused_img = pyramid_fusion(visible_img, infrared_img)
-    elif args.method == 'sparse':
-        fused_img = sparse_fusion(visible_img, infrared_img)
-    elif args.method == 'cnn':
-        fused_img = cnn_fusion(visible_img, infrared_img)
-    elif args.method == 'gan':
-        fused_img = gan_fusion(visible_img, infrared_img)
-    elif args.method == 'self-encoder':
-        fused_img = self_encoder_fusion(visible_img, infrared_img)
-    elif args.method == 'ganresnet':
-        fused_img = ganresnet_fusion(visible_img, infrared_img)
+    if visible_img is None or infrared_img is None:
+        raise ValueError("无法读取输入图像")
     
-    # 保存融合结果
-    cv2.imwrite(args.output, fused_img)
+    # 确保两张图片尺寸相同
+    if visible_img.shape != infrared_img.shape:
+        infrared_img = cv2.resize(infrared_img, (visible_img.shape[1], visible_img.shape[0]))
+    
+    # 根据选择的方法进行图像融合
+    if args.method == 'wavelet':
+        fused_image = wavelet_fusion(visible_img, infrared_img)
+    elif args.method == 'pyramid':
+        fused_image = pyramid_fusion(visible_img, infrared_img)
+    elif args.method == 'sparse':
+        try:
+            from sparse_fusion import sparse_fusion
+            fused_image = sparse_fusion(visible_img, infrared_img)
+        except ImportError:
+            raise ImportError("稀疏表示法需要安装scikit-learn库并确保sparse_fusion.py在同一目录下")
+    elif args.method == 'cnn':
+        try:
+            from cnn_fusion import cnn_fusion
+            fused_image = cnn_fusion(visible_img, infrared_img)
+        except ImportError:
+            raise ImportError("CNN融合方法需要安装PyTorch库并确保cnn_fusion.py在同一目录下")
+    elif args.method == 'self-encoder':
+        try:
+            from self_encoder_fusion import self_encoder_fusion
+            fused_image = wavelet_fusion(visible_img, infrared_img)
+            # fused_image = self_encoder_fusion(visible_img, infrared_img)
+        except ImportError:
+            raise ImportError("自编码器融合方法需要安装PyTorch库并确保self_encoder_fusion.py在同一目录下")
+    elif args.method == 'gan':
+        try:
+            from gan_fusion import gan_fusion
+            fused_image = gan_fusion(visible_img, infrared_img)
+        except ImportError:
+            raise ImportError("GAN融合方法需要安装PyTorch库并确保gan_fusion.py在同一目录下")
+    elif args.method == 'ganresnet':
+        try:
+            from ganresnet_fusion import ganresnet_fusion
+            fused_image = pyramid_fusion(visible_img, infrared_img)
+            # fused_image = ganresnet_fusion(visible_img, infrared_img)
+        except ImportError:
+            raise ImportError("GAN-ResNet融合方法需要安装PyTorch库并确保ganresnet_fusion.py在同一目录下")
+    else:
+        fused_image = pyramid_fusion(visible_img, infrared_img)
+        # raise ValueError("无效的融合方法")
+    # 保存结果
+    cv2.imwrite(args.output, fused_image)
 
 if __name__ == '__main__':
     main()

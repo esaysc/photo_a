@@ -11,7 +11,7 @@ import com.ruoyi.cms.service.IBookResourceService;
  * 图书Service业务层处理
  * 
  * @author lhl
- * @date 2025-05-22
+ * @date 2025-05-25
  */
 @Service
 public class BookResourceServiceImpl implements IBookResourceService 

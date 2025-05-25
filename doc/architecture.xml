@@ -3,33 +3,52 @@
     <mxCell id="0" />
     <mxCell id="1" parent="0" />
     
-    <!-- 后端架构 -->
-    <mxCell id="backend" value="后端服务" style="rounded=1;whiteSpace=wrap;fontSize=17;editable=0;movable=0;" vertex="1" parent="1">
-      <mxGeometry x="400" y="120" width="180" height="80" />
+    <!-- 后端核心 -->
+    <mxCell id="backend" value="Spring Boot 后端" style="rounded=1;whiteSpace=wrap;fontSize=17;editable=0;movable=0;" vertex="1" parent="1">
+      <mxGeometry x="300" y="50" width="250" height="320" />
     </mxCell>
-    
-    <!-- 核心模块 -->
-    <mxCell id="modules" value="功能模块" style="shape=cylinder3;editable=0;movable=0;" vertex="1" parent="backend">
-      <mxGeometry x="20" y="120" width="140" height="180" />
+
+    <!-- 后端子模块 -->
+    <mxCell id="ruoyi-admin" value="ruoyi-admin\n(系统管理)" style="shape=process;editable=0;movable=0;" vertex="1" parent="backend">
+      <mxGeometry x="30" y="40" width="120" height="60" />
+    </mxCell>
+    <mxCell id="ruoyi-cms" value="ruoyi-cms\n(内容管理)" style="shape=process;editable=0;movable=0;" vertex="1" parent="backend">
+      <mxGeometry x="30" y="120" width="120" height="60" />
+    </mxCell>
+    <mxCell id="python-service" value="Python 服务\n(图像处理)" style="shape=hexagon;editable=0;movable=0;" vertex="1" parent="backend">
+      <mxGeometry x="30" y="200" width="120" height="60" />
     </mxCell>
 
     <!-- 前端架构 -->
-    <mxCell id="frontend" value="前端UI" style="swimlane;fontSize=17;editable=0;movable=0;" vertex="1" parent="1">
-      <mxGeometry x="400" y="300" width="180" height="400" />
+    <mxCell id="frontend" value="Vue 前端" style="swimlane;fontSize=17;editable=0;movable=0;" vertex="1" parent="1">
+      <mxGeometry x="300" y="400" width="250" height="300" />
     </mxCell>
 
-    <!-- 静态资源 -->
-    <mxCell id="static" value="静态资源" style="shape=folder;editable=0;movable=0;" vertex="1" parent="frontend">
-      <mxGeometry x="40" y="60" width="100" height="120" />
+    <!-- 前端组件 -->
+    <mxCell id="components" value="Components\n(可复用组件)" style="shape=box3d;editable=0;movable=0;" vertex="1" parent="frontend">
+      <mxGeometry x="40" y="40" width="100" height="60" />
+    </mxCell>
+    <mxCell id="image-fusion" value="ImageFusion\n(融合组件)" style="shape=umlFrame;editable=0;movable=0;" vertex="1" parent="frontend">
+      <mxGeometry x="40" y="120" width="120" height="80" />
     </mxCell>
 
-    <!-- 图像融合服务 -->
-    <mxCell id="fusion" value="图像融合服务" style="shape=cloud;editable=0;movable=0;" vertex="1" parent="1">
-      <mxGeometry x="700" y="200" width="150" height="90" />
+    <!-- 数据存储 -->
+    <mxCell id="database" value="MySQL 数据库" style="shape=cylinder2;editable=0;movable=0;" vertex="1" parent="1">
+      <mxGeometry x="600" y="100" width="120" height="160" />
     </mxCell>
 
-    <!-- 禁用连接线 -->
-    <mxCell id="conn1" edge="1" parent="1" visible="0">
+    <!-- 配置文件 -->
+    <mxCell id="config" value="配置文件" style="shape=folder;editable=0;movable=0;" vertex="1" parent="1">
+      <mxGeometry x="600" y="300" width="100" height="120" />
+    </mxCell>
+
+    <!-- 图像处理模块 -->
+    <mxCell id="fusion-models" value="融合模型\n(self_encoder_fusion.py)\n(ganresnet_fusion.py)" style="shape=cube;editable=0;movable=0;" vertex="1" parent="1">
+      <mxGeometry x="600" y="450" width="140" height="90" />
+    </mxCell>
+
+    <!-- 禁用所有连接线 -->
+    <mxCell id="disabled-conn" edge="1" parent="1" visible="0">
       <mxGeometry relative="1" />
     </mxCell>
   </root>

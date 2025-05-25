@@ -1,7 +1,7 @@
 <template>
   <ImageFusion
     title="卷积神经网络图像融合"
-    fusion-method="'cnn'"
+    fusion-method="cnn"
   />
 </template>
 

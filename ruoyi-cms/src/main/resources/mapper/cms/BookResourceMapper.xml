@@ -11,12 +11,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="fileType"    column="file_type"    />
         <result property="description"    column="description"    />
         <result property="audience"    column="audience"    />
+        <result property="coverPath"    column="cover_path"    />
         <result property="categoryId"    column="category_id"    />
         <result property="createdAt"    column="created_at"    />
     </resultMap>
 
     <sql id="selectBookResourceVo">
-        select id, name, storage_path, file_type, description, audience, category_id, created_at from book_resource
+        select id, name, storage_path, file_type, description, audience, cover_path, category_id, created_at from book_resource
     </sql>
 
     <select id="selectBookResourceList" parameterType="BookResource" resultMap="BookResourceResult">
@@ -27,6 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="fileType != null  and fileType != ''"> and file_type = #{fileType}</if>
             <if test="description != null  and description != ''"> and description = #{description}</if>
             <if test="audience != null  and audience != ''"> and audience = #{audience}</if>
+            <if test="coverPath != null  and coverPath != ''"> and cover_path = #{coverPath}</if>
             <if test="categoryId != null "> and category_id = #{categoryId}</if>
         </where>
     </select>
@@ -44,6 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="fileType != null and fileType != ''">file_type,</if>
             <if test="description != null">description,</if>
             <if test="audience != null">audience,</if>
+            <if test="coverPath != null">cover_path,</if>
             <if test="categoryId != null">category_id,</if>
             <if test="createdAt != null">created_at,</if>
          </trim>
@@ -53,6 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="fileType != null and fileType != ''">#{fileType},</if>
             <if test="description != null">#{description},</if>
             <if test="audience != null">#{audience},</if>
+            <if test="coverPath != null">#{coverPath},</if>
             <if test="categoryId != null">#{categoryId},</if>
             <if test="createdAt != null">#{createdAt},</if>
          </trim>
@@ -66,6 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="fileType != null and fileType != ''">file_type = #{fileType},</if>
             <if test="description != null">description = #{description},</if>
             <if test="audience != null">audience = #{audience},</if>
+            <if test="coverPath != null">cover_path = #{coverPath},</if>
             <if test="categoryId != null">category_id = #{categoryId},</if>
             <if test="createdAt != null">created_at = #{createdAt},</if>
         </trim>

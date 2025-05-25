@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <!-- 搜索区 -->
+    <!-- 搜索区保持不变 -->
     <el-form
       :model="queryParams"
       ref="queryForm"
@@ -30,44 +30,45 @@
       </el-form-item>
     </el-form>
 
-    <!-- 卡片列表 -->
+    <!-- 修改卡片列表样式 -->
     <el-row :gutter="20" class="card-list">
       <el-col
         v-for="book in bookList"
         :key="book.id"
-        :xs="24"
-        :sm="12"
-        :md="8"
-        :lg="6"
+        :xs="24" :sm="12" :md="8" :lg="6"
       >
         <el-card
           class="book-card"
-          :body-style="{ padding: '10px' }"
           shadow="hover"
           @click.native="onCardClick(book)"
         >
-          <img
-            class="book-cover"
-            :src="book.coverPath || defaultCover"
-            alt="封面"
-          />
-          <h3 class="book-title">{{ book.name }}</h3>
-          <p class="book-info">类型：{{ book.fileType }}</p>
-          <p class="book-info">人群：{{ book.audience }}</p>
-          <el-button
-            class="download-btn"
-            type="primary"
-            size="small"
-            icon="el-icon-download"
-            @click.stop="onDownload(book)"
-          >
-            下载
-          </el-button>
+          <div class="cover-wrapper">
+            <img
+              class="book-cover"
+              :src="book.coverPath || defaultCover"
+              alt="封面"
+            />
+            <i class="el-icon-reading cover-icon"></i>
+          </div>
+          <div class="info">
+            <h4 class="title">{{ book.name }}</h4>
+            <p class="meta">
+              <span>类型：{{ book.fileType }}</span>
+              <span>人群：{{ book.audience }}</span>
+            </p>
+            <el-button
+              class="download-btn"
+              type="primary"
+              size="mini"
+              icon="el-icon-download"
+              @click.stop="onDownload(book)"
+            >下载</el-button>
+          </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- 分页 -->
+    <!-- 分页部分保持不变 -->
     <el-pagination
       v-if="total > 0"
       class="pagination"
@@ -87,8 +88,8 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { listBook } from '@/api/cms/book'
-
-const defaultCover = '/static/book-placeholder.png' // 你可以换成自己的默认封面
+const baseUrl = 'http://localhost:8080';
+const defaultCover = baseUrl+ '/profile/image/book-placeholder.jpg' // 你可以换成自己的默认封面
 
 // 查询参数
 const queryParams = reactive({
@@ -155,7 +156,7 @@ onMounted(fetchBooks)
 <style scoped>
 .app-container {
   padding: 20px;
-  background: #f9f9f9;
+  background: #f5f5f5;
 }
 
 .search-form {
@@ -168,36 +169,65 @@ onMounted(fetchBooks)
 
 .book-card {
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
   transition: transform .2s;
 }
+
 .book-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+}
+
+.cover-wrapper {
+  position: relative;
 }
 
 .book-cover {
   width: 100%;
-  height: 180px;
+  height: 160px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 4px 4px 0 0;
 }
 
-.book-title {
-  margin: 10px 0 5px;
+.cover-icon {
+  position: absolute;
+  font-size: 36px;
+  color: rgba(255,255,255,0.8);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.book-card:hover .cover-icon {
+  opacity: 1;
+}
+
+.info {
+  padding: 10px;
+  background: #fff;
+}
+
+.title {
+  margin: 0;
   font-size: 16px;
-  line-height: 1.2;
-  text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.book-info {
-  margin: 2px 0;
+.meta {
+  margin: 6px 0;
+  font-size: 12px;
   color: #666;
-  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .download-btn {
-  margin-top: 8px;
+  margin-top: 6px;
+  width: 100%;
 }
 
 .pagination {

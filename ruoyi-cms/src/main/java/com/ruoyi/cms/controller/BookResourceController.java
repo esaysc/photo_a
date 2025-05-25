@@ -25,7 +25,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * 图书Controller
  * 
  * @author lhl
- * @date 2025-05-22
+ * @date 2025-05-25
  */
 @RestController
 @RequestMapping("/cms/book")

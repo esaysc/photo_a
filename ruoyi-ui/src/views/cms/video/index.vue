@@ -104,7 +104,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { listVideo } from '@/api/cms/video'
 
-const defaultCover = '/static/video-placeholder.png' // 默认封面
+const baseUrl = 'http://localhost:8080';
+const defaultCover = baseUrl + '/profile/image/book-placeholder.jpg' 
 
 const queryParams = reactive({
   pageNum: 1,

@@ -11,13 +11,13 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 图书对象 book_resource
  * 
  * @author lhl
- * @date 2025-05-22
+ * @date 2025-05-25
  */
 public class BookResource extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 书编号 */
+    /**  */
     private Long id;
 
     /** 书籍名称 */
@@ -40,11 +40,15 @@ public class BookResource extends BaseEntity
     @Excel(name = "适用人群")
     private String audience;
 
+    /** 封面图像路径 */
+    @Excel(name = "封面图像路径")
+    private String coverPath;
+
     /** 关联 book_category */
     @Excel(name = "关联 book_category")
     private Long categoryId;
 
-    /** 创建时间 */
+    /**  */
     private Date createdAt;
 
     public void setId(Long id) 
@@ -107,6 +111,16 @@ public class BookResource extends BaseEntity
         return audience;
     }
 
+    public void setCoverPath(String coverPath) 
+    {
+        this.coverPath = coverPath;
+    }
+
+    public String getCoverPath() 
+    {
+        return coverPath;
+    }
+
     public void setCategoryId(Long categoryId) 
     {
         this.categoryId = categoryId;
@@ -136,6 +150,7 @@ public class BookResource extends BaseEntity
             .append("fileType", getFileType())
             .append("description", getDescription())
             .append("audience", getAudience())
+            .append("coverPath", getCoverPath())
             .append("categoryId", getCategoryId())
             .append("createdAt", getCreatedAt())
             .toString();
