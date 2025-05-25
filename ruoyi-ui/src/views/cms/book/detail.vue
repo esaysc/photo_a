@@ -29,7 +29,7 @@
             <!-- PDF预览 -->
             <template v-if="isPDF">
               <vue-pdf-embed
-                :source="bookInfo.storagePath"
+                :source="baseUrl + bookInfo.storagePath"
                 :page="currentPage"
                 class="pdf-viewer"
                 @loaded="onPdfLoaded"
@@ -101,11 +101,17 @@ const isImage = computed(() => {
 })
 
 // 获取图书信息
+// 获取图书信息
 async function fetchBookInfo() {
   try {
-    console.log("route => ", route);
+    const id = route.query.id
+    if (!id) {
+      ElMessage.error('图书ID不能为空')
+      router.back()
+      return
+    }
     
-    const { data } = await getBook(route.params.id)
+    const { data } = await getBook(id)
     bookInfo.value = data
     
     // 如果是Markdown文件，获取内容

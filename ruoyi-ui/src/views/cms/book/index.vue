@@ -62,7 +62,7 @@
               size="mini"
               icon="el-icon-download"
               @click.stop="onDownload(book)"
-            >下载</el-button>
+            >打开</el-button>
           </div>
         </el-card>
       </el-col>
@@ -89,8 +89,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { listBook } from '@/api/cms/book'
-const baseUrl = 'http://localhost:8080';
-const defaultCover = baseUrl+ '/profile/image/book-placeholder.jpg' // 你可以换成自己的默认封面
+const baseUrl = 'http://localhost:8080/profile';
+const defaultCover = baseUrl+ '/image/book-placeholder.jpg' // 你可以换成自己的默认封面
 const router = useRouter()
 // 查询参数
 const queryParams = reactive({
@@ -124,9 +124,10 @@ function onReset() {
 
 // 点击卡片：可以跳转详情页或直接下载
 function onCardClick(book) {
-  console.log("点击 id => " + book);
-  
-  router.push({ path: 'book-detail', params: { id: book.id } })
+  console.log("点击 id => " + book.id);
+  onDownload(book);
+  // router.push({ path: 'book-detail', query: { id: book.id } })
+  // router.push(`/cms/book/detail/${book.id}`)
   // 这里简单做下载：
   // window.open(book.storagePath, '_blank')
 }

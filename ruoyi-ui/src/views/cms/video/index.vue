@@ -62,7 +62,7 @@
               size="mini"
               icon="el-icon-download"
               @click.stop="download(video)"
-            >下载</el-button>
+            >打开</el-button>
           </div>
         </el-card>
       </el-col>
@@ -105,8 +105,8 @@ import { ref, reactive, onMounted } from 'vue'
 import { listVideo } from '@/api/cms/video'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const baseUrl = 'http://localhost:8080';
-const defaultCover = baseUrl + '/profile/image/book-placeholder.jpg' 
+const baseUrl = 'http://localhost:8080/profile';
+const defaultCover = baseUrl + '/image/book-placeholder.jpg' 
 
 const queryParams = reactive({
   pageNum: 1,
@@ -151,11 +151,11 @@ function onSizeChange(size) {
 
 // 点击卡片，打开播放器
 function openPlayer(video) {
-  console.log("video => ", video);
-  router.push({ path: 'video-detail', params: { id: video.id } })
-  
-  currentVideo.value = video
-  playerOpen.value = true
+  // console.log("video.id => ", video.id);
+  // router.push({ path: 'video-detail', query: { id: video.id } })
+  // currentVideo.value = video
+  // playerOpen.value = true
+  download(video);
 }
 
 // 下载
