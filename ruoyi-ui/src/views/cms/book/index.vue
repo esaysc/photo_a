@@ -122,19 +122,13 @@ function onReset() {
   onSearch()
 }
 
-// 点击卡片：跳转详情页
+// 点击卡片：可以跳转详情页或直接下载
 function onCardClick(book) {
-  const storagePath = baseUrl + book.storagePath
-  router.push({
-    name: 'book-detail',
-    params: {
-      storagePath: encodeURIComponent(storagePath),
-      name: book.name,
-      fileType: book.fileType,
-      audience: book.audience,
-      coverPath: book.coverPath || defaultCover
-    }
-  })
+  console.log("点击 id => " + book);
+  
+  router.push({ path: 'book-detail', params: { id: book.id } })
+  // 这里简单做下载：
+  // window.open(book.storagePath, '_blank')
 }
 
 // 下载按钮

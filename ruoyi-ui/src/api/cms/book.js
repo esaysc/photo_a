@@ -12,7 +12,7 @@ export function listBook(query) {
 // 查询图书详细
 export function getBook(id) {
   return request({
-    url: '/cms/book/' + id,
+    url: '/cms/book/' + Number(id),
     method: 'get'
   })
 }

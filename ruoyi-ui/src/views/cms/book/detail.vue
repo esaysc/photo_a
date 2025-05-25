@@ -10,7 +10,7 @@
       <el-row :gutter="20">
         <el-col :span="6">
           <div class="cover-wrapper">
-            <img :src="bookInfo.coverPath" :alt="bookInfo.name" class="book-cover" />
+            <img :src="bookInfo.coverPath || defaultCover" :alt="bookInfo.name" class="book-cover" />
             <div class="book-meta">
               <p><strong>类型：</strong>{{ bookInfo.fileType }}</p>
               <p><strong>适用人群：</strong>{{ bookInfo.audience }}</p>
@@ -70,20 +70,17 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { getBook } from '@/api/cms/book'
 import VuePdfEmbed from 'vue-pdf-embed'
 import { marked } from 'marked'
 
 const route = useRoute()
 const router = useRouter()
+const baseUrl = 'http://localhost:8080'
+const defaultCover = baseUrl + '/profile/image/book-placeholder.jpg'
 
 // 图书信息
-const bookInfo = ref({
-  name: route.params.name,
-  fileType: route.params.fileType,
-  audience: route.params.audience,
-  coverPath: route.params.coverPath,
-  storagePath: decodeURIComponent(route.params.storagePath)
-})
+const bookInfo = ref({})
 
 // PDF相关
 const currentPage = ref(1)
@@ -103,16 +100,22 @@ const isImage = computed(() => {
   return ['jpg', 'jpeg', 'png', 'gif'].includes(type)
 })
 
-// 获取Markdown内容
-async function fetchMarkdownContent() {
-  if (isMarkdown.value) {
-    try {
+// 获取图书信息
+async function fetchBookInfo() {
+  try {
+    console.log("route => ", route);
+    
+    const { data } = await getBook(route.params.id)
+    bookInfo.value = data
+    
+    // 如果是Markdown文件，获取内容
+    if (isMarkdown.value) {
       const response = await fetch(bookInfo.value.storagePath)
       markdownContent.value = await response.text()
-    } catch (error) {
-      console.error('获取Markdown内容失败：', error)
-      ElMessage.error('获取文件内容失败')
     }
+  } catch (error) {
+    console.error('获取图书信息失败：', error)
+    ElMessage.error('获取图书信息失败')
   }
 }
 
@@ -131,14 +134,13 @@ function onDownload() {
   const a = document.createElement('a')
   a.href = bookInfo.value.storagePath
   a.download = bookInfo.value.name
-  a.target = '_blank'
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
 }
 
 onMounted(() => {
-  fetchMarkdownContent()
+  fetchBookInfo()
 })
 </script>
 
