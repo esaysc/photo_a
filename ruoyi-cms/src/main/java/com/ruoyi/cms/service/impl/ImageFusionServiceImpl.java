@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,9 @@ public class ImageFusionServiceImpl implements IImageFusionService {
     private final String pythonPath = Paths.get(System.getProperty("user.dir"), "venv/Scripts/python.exe").toString();  // 使用虚拟环境的Python
     // private final String scriptPath = Paths.get(RuoYiConfig.getProfile(), "python/image_fusion.py").toString();
     private final String scriptPath = Paths.get(RuoYiConfig.getProfile(), "python", "image_fusion.py").toString();
+
+    // 添加算法计数器，线程安全
+    private static final ConcurrentHashMap<String, AtomicInteger> algorithmCounters = new ConcurrentHashMap<>();
 
     @Override
     public String fusionImages(String visibleImage, String infraredImage, String fusionMethod) {
@@ -29,10 +34,11 @@ public class ImageFusionServiceImpl implements IImageFusionService {
             
             log.info("处理后的完整路径: visible={}, infrared={}", visiblePath, infraredPath);
             
-            // 生成唯一的输出文件名
-            String timestamp = String.valueOf(System.currentTimeMillis());
-            String outputFileName = "fusion_" + timestamp + ".jpg";
+            // 生成按算法名+次数命名的输出文件名
+            String outputFileName = generateOutputFileName(fusionMethod);
             String outputPath = Paths.get(RuoYiConfig.getProfile(), "fusion", outputFileName).toString();
+            
+            log.info("生成的输出文件名: {}", outputPath);
             
             // 确保输出目录存在
             new File(outputPath).getParentFile().mkdirs();
@@ -72,5 +78,40 @@ public class ImageFusionServiceImpl implements IImageFusionService {
             log.error("图像融合处理失败", e);
             throw new RuntimeException("图像融合处理失败: " + e.getMessage());
         }
+    }
+
+    /**
+     * 生成按算法名+次数命名的输出文件名
+     * @param fusionMethod 融合算法名称
+     * @return 文件名，格式如：wavelet_001.jpg
+     */
+    private String generateOutputFileName(String fusionMethod) {
+        // 获取或创建该算法的计数器
+        AtomicInteger counter = algorithmCounters.computeIfAbsent(fusionMethod, k -> new AtomicInteger(0));
+        
+        // 自增计数
+        int count = counter.incrementAndGet();
+        
+        // 格式化文件名：算法名_序号.jpg
+        return String.format("%s_%03d.jpg", fusionMethod, count);
+    }
+
+    /**
+     * 重置指定算法的计数器（可选方法，用于管理）
+     * @param fusionMethod 算法名称
+     */
+    public void resetCounter(String fusionMethod) {
+        algorithmCounters.put(fusionMethod, new AtomicInteger(0));
+        log.info("已重置算法 {} 的计数器", fusionMethod);
+    }
+
+    /**
+     * 获取指定算法的当前计数（可选方法，用于查询）
+     * @param fusionMethod 算法名称
+     * @return 当前计数
+     */
+    public int getCurrentCount(String fusionMethod) {
+        AtomicInteger counter = algorithmCounters.get(fusionMethod);
+        return counter != null ? counter.get() : 0;
     }
 }

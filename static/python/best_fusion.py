@@ -10,7 +10,10 @@ class BestFusion:
             'cnn',
             'gan',
             'sparse',
-            'self-encoder'
+            'self-encoder',
+            'ganresnet',
+            'wavelet',
+            'pyramid'
         ]
     
     def evaluate_fusion(self, fused_img, visible_img, infrared_img):

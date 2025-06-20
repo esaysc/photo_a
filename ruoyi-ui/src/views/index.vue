@@ -217,5 +217,12 @@ function goTarget(url) {
     }
   }
 }
+
+.title {
+  font-size: 26px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  text-align: center;
+}
 </style>
 

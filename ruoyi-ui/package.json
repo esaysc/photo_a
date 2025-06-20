@@ -1,8 +1,8 @@
 {
-  "name": "ruoyi",
+  "name": "irvisionsys",
   "version": "3.8.9",
   "description": "红外与可见光图像融合系统",
-  "author": "若依",
+  "author": "IRVisionSys",
   "license": "MIT",
   "type": "module",
   "scripts": {

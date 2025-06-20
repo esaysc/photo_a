@@ -8,9 +8,9 @@
     <artifactId>ruoyi</artifactId>
     <version>3.8.9</version>
 
-    <name>ruoyi</name>
+    <name>IRVisionSys</name>
     <url>http://www.ruoyi.vip</url>
-    <description>若依管理系统</description>
+    <description>红外与可见光图像融合系统</description>
     
     <properties>
         <ruoyi.version>3.8.9</ruoyi.version>
